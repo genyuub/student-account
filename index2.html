@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gen’s Student Allowance Planner ✨ 2026</title>
+  <style>
+    :root{
+      --pink:#F8C8DC;
+      --lavender:#D9C7F1;
+      --mint:#CFF5E7;
+      --cream:#FFF3E6;
+      --ink:#4A4A4A;
+      --soft:#ffffff;
+      --accent:#9B7BD1;
+      --success:#5CBF9B;
+      --warn:#FF9E9E;
+      --shadow:0 10px 25px rgba(0,0,0,0.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      background:linear-gradient(180deg, var(--cream), var(--mint));
+      color:var(--ink);
+      font-family: "Nunito", "Poppins", "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(90deg, var(--pink), var(--lavender));
+      color:#3b2b5f;
+      padding:18px 20px;
+      box-shadow:var(--shadow);
+    }
+    .title{
+      font-weight:800;
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
+      letter-spacing:0.3px;
+    }
+    .subtitle{
+      font-size:0.95rem;
+      opacity:0.85;
+      margin-top:6px;
+    }
+    .container{
+      max-width:1200px;
+      margin:24px auto;
+      padding:0 16px;
+    }
+    .card{
+      background:var(--soft);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .card:hover{ transform:translateY(-2px); box-shadow:0 14px 30px rgba(0,0,0,0.12); }
+    .settings-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:12px;
+    }
+    .input-group{
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .input-group label{
+      font-weight:700; font-size:0.95rem;
+    }
+    .input, select, textarea{
+      border:none;
+      background: #f9f9fb;
+      padding:12px 14px;
+      border-radius:14px;
+      box-shadow: inset 0 0 0 2px #eee;
+      font-size:0.95rem;
+      transition: box-shadow .2s ease, background .2s ease;
+    }
+    .input:focus, select:focus, textarea:focus{
+      outline:none;
+      box-shadow: inset 0 0 0 2px var(--accent);
+      background:#fff;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      background: #f6f0ff;
+      color:#5b3ea6;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:700;
+      box-shadow:var(--shadow);
+    }
+    .calendar-grid{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    .month{
+      margin-top:24px;
+    }
+    .month-header{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; flex-wrap:wrap;
+    }
+    .month-title{
+      font-size:1.3rem; font-weight:800;
+      color:#3b2b5f;
+    }
+    .weekday{
+      font-weight:700; font-size:0.85rem; opacity:0.7; text-align:center;
+    }
+    .day{
+      background:#fff;
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      padding:10px;
+      display:flex; flex-direction:column; gap:8px;
+      min-height:160px;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .day:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(0,0,0,0.12); }
+    .day-number{
+      font-weight:800; color:#6b5aa6; background:#f3ecff; padding:6px 10px; border-radius:999px; width:max-content;
+      box-shadow: inset 0 0 0 1px #e7dcff;
+    }
+    .day-inputs{
+      display:grid; grid-template-columns:1fr 1fr; gap:8px;
+    }
+    .note{
+      width:100%; resize:vertical; min-height:48px;
+    }
+    .summary{
+      margin-top:14px;
+      display:grid; grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+    .summary .stat{
+      background:#fff; border-radius:16px; padding:12px;
+      box-shadow:var(--shadow);
+    }
+    .stat .label{ font-weight:700; font-size:0.85rem; opacity:0.7; }
+    .stat .value{ font-weight:800; font-size:1.05rem; margin-top:6px; }
+    .progress-wrap{
+      margin-top:12px;
+      background:#fff; border-radius:16px; padding:12px; box-shadow:var(--shadow);
+    }
+    .progress-bar{
+      width:100%; height:14px; background:#f0f0f5; border-radius:999px; overflow:hidden;
+      box-shadow: inset 0 0 0 1px #e8e8ee;
+    }
+    .progress-fill{
+      height:100%; width:0%; background:linear-gradient(90deg, var(--mint), var(--accent));
+      transition: width .4s ease;
+    }
+    .progress-info{
+      display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-weight:700; font-size:0.9rem;
+    }
+    .badge{
+      display:inline-block; padding:6px 10px; border-radius:999px; font-weight:800; font-size:0.85rem;
+    }
+    .badge.warn{ background:#ffecec; color:#b24a4a; box-shadow: inset 0 0 0 1px #ffc9c9; }
+    .badge.ok{ background:#e9fff6; color:#2f7a61; box-shadow: inset 0 0 0 1px #c8f1e2; }
+    .success-msg{
+      margin-top:8px; background:#e9fff6; color:#2f7a61; padding:10px 12px; border-radius:12px; font-weight:700;
+      display:none;
+    }
+    .month-controls{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    .goal-input{
+      width:180px;
+    }
+    .footer{
+      margin:40px 0 60px;
+      text-align:center;
+      opacity:0.7;
+      font-weight:700;
+    }
+    /* Weekday header row */
+    .weekday-row{
+      display:grid; grid-template-columns: repeat(7, 1fr); gap:10px; margin-top:10px;
+    }
+    /* Responsive */
+    @media (max-width: 980px){
+      .settings-grid{ grid-template-columns:1fr 1fr; }
+      .summary{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px){
+      .settings-grid{ grid-template-columns:1fr; }
+      .calendar-grid{ grid-template-columns: repeat(2, 1fr); }
+      .weekday-row{ display:none; }
+      .day{ min-height:140px; }
+      .month-header{ flex-direction:column; align-items:flex-start; }
+      .goal-input{ width:100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">Gen’s Student Allowance Planner ✨ 2026</div>
+    <div class="subtitle">A gentle, cozy money diary for daily or weekly allowance—track spending, savings, and what’s left with zero guilt.</div>
+  </header>
+
+  <main class="container">
+    <!-- Global Settings -->
+    <section class="card" id="settings">
+      <div class="pill">🎒 Allowance settings</div>
+      <div class="settings-grid" style="margin-top:12px;">
+        <div class="input-group">
+          <label for="allowanceType">Allowance type</label>
+          <select id="allowanceType" class="input">
+            <option value="daily">Daily allowance</option>
+            <option value="weekly">Weekly allowance</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="allowanceAmount">Amount</label>
+          <input id="allowanceAmount" class="input" type="number" min="0" step="0.01" placeholder="e.g., 100.00" />
+        </div>
+        <div class="input-group">
+          <label for="globalWarnThreshold">Gentle warning threshold (%)</label>
+          <input id="globalWarnThreshold" class="input" type="number" min="50" max="100" step="1" value="85" />
+        </div>
+      </div>
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <span class="badge ok">Auto-calculated monthly totals</span>
+        <span class="badge ok">Data saves automatically</span>
+        <span class="badge ok">Real-time updates</span>
+      </div>
+    </section>
+
+    <!-- Calendar + Monthly Summaries -->
+    <section id="months"></section>
+
+    <div class="footer">🌸 Keep it gentle—small steps, steady savings. You’ve got this.</div>
+  </main>
+
+  <script>
+    // --- Utilities & State ---
+    const STORAGE_KEY = "gens_allowance_planner_2026_v1";
+    const state = loadState() || {
+      settings: { type: "daily", amount: 0, warnThreshold: 85 },
+      months: {} // monthIndex: { goal: number, days: { day: {spent, saved, note}} }
+    };
+
+    const year = 2026;
+    const monthNames = [
+      "January","February","March","April","May","June",
+      "July","August","September","October","November","December"
+    ];
+    const weekdayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      }catch(e){ return null; }
+    }
+    function currency(n){
+      const num = Number(n||0);
+      return num.toLocaleString(undefined, { style:"currency", currency:"PHP" });
+    }
+    function daysInMonth(y, m){ return new Date(y, m+1, 0).getDate(); }
+    function firstWeekday(y, m){ return new Date(y, m, 1).getDay(); }
+    function weeksInMonthApprox(y, m){
+      // Simple approximation: ceil(days/7)
+      return Math.ceil(daysInMonth(y, m)/7);
+    }
+
+    // --- Settings wiring ---
+    const allowanceTypeEl = document.getElementById("allowanceType");
+    const allowanceAmountEl = document.getElementById("allowanceAmount");
+    const globalWarnThresholdEl = document.getElementById("globalWarnThreshold");
+
+    // Initialize settings UI
+    allowanceTypeEl.value = state.settings.type;
+    allowanceAmountEl.value = state.settings.amount || "";
+    globalWarnThresholdEl.value = state.settings.warnThreshold;
+
+    allowanceTypeEl.addEventListener("change", e=>{
+      state.settings.type = e.target.value;
+      saveState();
+      updateAllMonths();
+    });
+    allowanceAmountEl.addEventListener("input", e=>{
+      state.settings.amount = parseFloat(e.target.value||0);
+      saveState();
+      updateAllMonths();
+    });
+    globalWarnThresholdEl.addEventListener("input", e=>{
+      state.settings.warnThreshold = parseInt(e.target.value||85,10);
+      saveState();
+      updateAllMonths();
+    });
+
+    // --- Build Months ---
+    const monthsContainer = document.getElementById("months");
+
+    function buildMonth(mIndex){
+      const monthCard = document.createElement("div");
+      monthCard.className = "month card";
+      const monthTitleId = `month-${mIndex}`;
+
+      // Ensure month state
+      if(!state.months[mIndex]){
+        state.months[mIndex] = { goal: 0, days: {} };
+      }
+
+      // Header
+      const header = document.createElement("div");
+      header.className = "month-header";
+
+      const title = document.createElement("div");
+      title.className = "month-title";
+      title.textContent = `${monthNames[mIndex]} ${year}`;
+
+      const controls = document.createElement("div");
+      controls.className = "month-controls";
+
+      const goalLabel = document.createElement("label");
+      goalLabel.textContent = "Savings goal";
+      goalLabel.style.fontWeight = "800";
+      goalLabel.style.fontSize = "0.9rem";
+
+      const goalInput = document.createElement("input");
+      goalInput.type = "number";
+      goalInput.min = "0";
+      goalInput.step = "0.01";
+      goalInput.placeholder = "e.g., 1000";
+      goalInput.className = "input goal-input";
+      goalInput.value = state.months[mIndex].goal || "";
+
+      goalInput.addEventListener("input", e=>{
+        state.months[mIndex].goal = parseFloat(e.target.value||0);
+        saveState();
+        updateMonthSummary(mIndex);
+      });
+
+      controls.appendChild(goalLabel);
+      controls.appendChild(goalInput);
+
+      header.appendChild(title);
+      header.appendChild(controls);
+
+      // Weekday header row
+      const weekdayRow = document.createElement("div");
+      weekdayRow.className = "weekday-row";
+      weekdayNames.forEach(w=>{
+        const wEl = document.createElement("div");
+        wEl.className = "weekday";
+        wEl.textContent = w;
+        weekdayRow.appendChild(wEl);
+      });
+
+      // Calendar grid
+      const grid = document.createElement("div");
+      grid.className = "calendar-grid";
+
+      const dim = daysInMonth(year, mIndex);
+      const first = firstWeekday(year, mIndex);
+
+      // Fill leading blanks
+      for(let i=0;i<first;i++){
+        const blank = document.createElement("div");
+        blank.style.visibility = "hidden";
+        grid.appendChild(blank);
+      }
+
+      for(let d=1; d<=dim; d++){
+        const dayKey = d;
+        if(!state.months[mIndex].days[dayKey]){
+          state.months[mIndex].days[dayKey] = { spent:0, saved:0, note:"" };
+        }
+
+        const day = document.createElement("div");
+        day.className = "day";
+
+        const number = document.createElement("div");
+        number.className = "day-number";
+        number.textContent = d;
+
+        const inputs = document.createElement("div");
+        inputs.className = "day-inputs";
+
+        const spentInput = document.createElement("input");
+        spentInput.type = "number";
+        spentInput.min = "0";
+        spentInput.step = "0.01";
+        spentInput.placeholder = "Spent";
+        spentInput.className = "input";
+        spentInput.value = state.months[mIndex].days[dayKey].spent || "";
+
+        const savedInput = document.createElement("input");
+        savedInput.type = "number";
+        savedInput.min = "0";
+        savedInput.step = "0.01";
+        savedInput.placeholder = "Saved (optional)";
+        savedInput.className = "input";
+        savedInput.value = state.months[mIndex].days[dayKey].saved || "";
+
+        const note = document.createElement("textarea");
+        note.className = "note";
+        note.placeholder = "Note (e.g., food, fare, school supplies)";
+        note.value = state.months[mIndex].days[dayKey].note || "";
+
+        spentInput.addEventListener("input", e=>{
+          state.months[mIndex].days[dayKey].spent = parseFloat(e.target.value||0);
+          saveState();
+          updateMonthSummary(mIndex);
+        });
+        savedInput.addEventListener("input", e=>{
+          state.months[mIndex].days[dayKey].saved = parseFloat(e.target.value||0);
+          saveState();
+          updateMonthSummary(mIndex);
+        });
+        note.addEventListener("input", e=>{
+          state.months[mIndex].days[dayKey].note = e.target.value||"";
+          saveState();
+        });
+
+        inputs.appendChild(spentInput);
+        inputs.appendChild(savedInput);
+
+        day.appendChild(number);
+        day.appendChild(inputs);
+        day.appendChild(note);
+
+        grid.appendChild(day);
+      }
+
+      // Summary
+      const summary = document.createElement("div");
+      summary.className = "summary";
+      summary.dataset.monthIndex = mIndex;
+
+      const statAllowance = document.createElement("div");
+      statAllowance.className = "stat";
+      statAllowance.innerHTML = `<div class="label">Total allowance</div><div class="value" data-sum="allowance">—</div>`;
+
+      const statSpent = document.createElement("div");
+      statSpent.className = "stat";
+      statSpent.innerHTML = `<div class="label">Total spent</div><div class="value" data-sum="spent">—</div>`;
+
+      const statSaved = document.createElement("div");
+      statSaved.className = "stat";
+      statSaved.innerHTML = `<div class="label">Total saved</div><div class="value" data-sum="saved">—</div>`;
+
+      const statRemaining = document.createElement("div");
+      statRemaining.className = "stat";
+      statRemaining.innerHTML = `<div class="label">Remaining allowance</div><div class="value" data-sum="remaining">—</div>`;
+
+      summary.appendChild(statAllowance);
+      summary.appendChild(statSpent);
+      summary.appendChild(statSaved);
+      summary.appendChild(statRemaining);
+
+      // Progress + feedback
+      const progressWrap = document.createElement("div");
+      progressWrap.className = "progress-wrap";
+
+      const progressBar = document.createElement("div");
+      progressBar.className = "progress-bar";
+      const progressFill = document.createElement("div");
+      progressFill.className = "progress-fill";
+      progressFill.dataset.monthIndex = mIndex;
+      progressBar.appendChild(progressFill);
+
+      const progressInfo = document.createElement("div");
+      progressInfo.className = "progress-info";
+      progressInfo.innerHTML = `
+        <div><strong>Savings progress:</strong> <span data-progress-text="${mIndex}">0%</span></div>
+        <div class="badge ok" data-badge="${mIndex}">On track</div>
+      `;
+
+      const successMsg = document.createElement("div");
+      successMsg.className = "success-msg";
+      successMsg.dataset.success = mIndex;
+      successMsg.textContent = "🎉 Savings goal reached—so proud of you!";
+
+      progressWrap.appendChild(progressBar);
+      progressWrap.appendChild(progressInfo);
+      progressWrap.appendChild(successMsg);
+
+      // Assemble
+      monthCard.appendChild(header);
+      monthCard.appendChild(weekdayRow);
+      monthCard.appendChild(grid);
+      monthCard.appendChild(summary);
+      monthCard.appendChild(progressWrap);
+
+      monthsContainer.appendChild(monthCard);
+
+      // Initial summary compute
+      updateMonthSummary(mIndex);
+    }
+
+    function buildAllMonths(){
+      monthsContainer.innerHTML = "";
+      for(let m=0; m<12; m++){
+        buildMonth(m);
+      }
+    }
+
+    // --- Calculations ---
+    function computeMonthlyAllowance(mIndex){
+      const amount = Number(state.settings.amount||0);
+      const type = state.settings.type;
+      const dim = daysInMonth(year, mIndex);
+      if(type === "daily"){
+        return amount * dim;
+      }else{
+        const weeks = weeksInMonthApprox(year, mIndex);
+        return amount * weeks;
+      }
+    }
+
+    function getMonthTotals(mIndex){
+      const days = state.months[mIndex]?.days || {};
+      let spent = 0, saved = 0;
+      Object.values(days).forEach(d=>{
+        spent += Number(d.spent||0);
+        saved += Number(d.saved||0);
+      });
+      const allowance = computeMonthlyAllowance(mIndex);
+      const remaining = allowance - spent - saved;
+      return { allowance, spent, saved, remaining };
+    }
+
+    function updateMonthSummary(mIndex){
+      const summaryEl = [...document.querySelectorAll(".summary")].find(s=>Number(s.dataset.monthIndex)===mIndex);
+      if(!summaryEl) return;
+
+      const { allowance, spent, saved, remaining } = getMonthTotals(mIndex);
+
+      summaryEl.querySelector('[data-sum="allowance"]').textContent = currency(allowance);
+      summaryEl.querySelector('[data-sum="spent"]').textContent = currency(spent);
+      summaryEl.querySelector('[data-sum="saved"]').textContent = currency(saved);
+      summaryEl.querySelector('[data-sum="remaining"]').textContent = currency(remaining);
+
+      // Progress
+      const goal = Number(state.months[mIndex].goal||0);
+      const pct = goal>0 ? Math.min(100, Math.round((saved/goal)*100)) : 0;
+      const fill = document.querySelector(`.progress-fill[data-month-index="${mIndex}"]`);
+      const text = document.querySelector(`[data-progress-text="${mIndex}"]`);
+      const badge = document.querySelector(`[data-badge="${mIndex}"]`);
+      const success = document.querySelector(`[data-success="${mIndex}"]`);
+
+      if(fill){ fill.style.width = pct + "%"; }
+      if(text){ text.textContent = `${pct}%`; }
+
+      // Gentle warning if spending exceeds threshold of allowance
+      const threshold = Number(state.settings.warnThreshold||85);
+      const spentPct = allowance>0 ? Math.round((spent/allowance)*100) : 0;
+      if(spentPct >= threshold){
+        if(badge){
+          badge.textContent = "Spending high—slow and steady 💗";
+          badge.className = "badge warn";
+        }
+      }else{
+        if(badge){
+          badge.textContent = "On track";
+          badge.className = "badge ok";
+        }
+      }
+
+      // Success message when goal reached
+      if(success){
+        success.style.display = (goal>0 && saved >= goal) ? "block" : "none";
+      }
+    }
+
+    function updateAllMonths(){
+      for(let m=0;m<12;m++){
+        updateMonthSummary(m);
+      }
+    }
+
+    // --- Init ---
+    buildAllMonths();
+
+    // --- Friendly defaults if empty ---
+    if(!state.settings.amount){
+      // Nudge with a soft default
+      state.settings.amount = 100;
+      allowanceAmountEl.value = 100;
+      saveState();
+      updateAllMonths();
+    }
+
+    // --- Smooth UX touches ---
+    // Persist scroll position
+    const SCROLL_KEY = STORAGE_KEY + "_scroll";
+    window.addEventListener("beforeunload", ()=>{
+      localStorage.setItem(SCROLL_KEY, String(window.scrollY));
+    });
+    window.addEventListener("load", ()=>{
+      const y = parseFloat(localStorage.getItem(SCROLL_KEY)||"0");
+      if(!isNaN(y)) window.scrollTo({ top:y, behavior:"instant" });
+    });
+  </script>
+</body>
+</html>
